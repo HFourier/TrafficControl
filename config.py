@@ -1,5 +1,5 @@
 # 网卡名
-nic_name = 'enp0s31f6'
+nic_name = 'lo'
 
 # 数据保留到小数点后几位
 decimal_place = 2

@@ -1,7 +1,8 @@
-import psutil
-import time
+from scapy.all import *
+import random
 
-for i in range(20):
-    print(f"usage:{psutil.cpu_percent()}--->time percent:{psutil.cpu_times_percent()}--->diff:{psutil.cpu_percent()-psutil.cpu_times_percent()[0]-psutil.cpu_times_percent()[1]}")
-
-    time.sleep(1)
+for _ in range(100):
+    src_port = random.randint(1024, 65535)
+    payload = "Data: " + str(random.randint(1, 1000))
+    packet = IP(dst="127.0.0.0")/UDP(sport=src_port, dport=9999)/Raw(load=payload)
+    send(packet)

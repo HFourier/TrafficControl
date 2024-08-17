@@ -109,7 +109,7 @@ if __name__ == "__main__":
     nm = Measure(config.nic_name)
     try:
         while 1:
-            time.sleep(1)
+            time.sleep(0.1)
             nm.renew_nic_state()
             nm.record()
             ans = nm.get_state()
