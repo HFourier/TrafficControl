@@ -1,4 +1,4 @@
-from utils.tools import read_csv, send_data, send_data_max, clear_bandwidth_limit, limit_bandwidth
+from utils.tools import *
 import time
 from threading import Thread, Event
 from utils import config
@@ -25,11 +25,12 @@ if __name__ == '__main__':
 
     csv_file = './data/traffic_data.csv'
     timestamp, traffic_bps_dl, traffic_bps_ul = read_csv(csv_file)
-    interface = "virbr0" # 要限制流量的网卡
+    interface = "eno1" # 要限制流量的网卡
     
     # try:
     #     # 持续发送数据
-    #     t1 = Thread(target=send_data_max)
+    #     # t1 = Thread(target=send_data_max)
+    #     t1 = Thread(target=send_data_ac_rate)
     #     t1.daemon = True
     #     t1.start()
 
@@ -53,23 +54,20 @@ if __name__ == '__main__':
     # limit_bandwidth(interface, 4080)
     print('Interface: ', interface)
     # clear_bandwidth_limit(interface)
+    # ======================= 2024年08月20日 =======================
+    # for i in range(10):
+    #     time.sleep(1)
+    #     band = traffic_bps_dl[i]
+    #     if band < 2048:
+    #         band = 2048
+    #     limit_bandwidth(interface, band, direction = 'outcoming')
+    #     print("------------time slot: {}, band {} Kbps -------------".format(timestamp[i], band))
+    # clear_bandwidth_limit(interface)
+    # ======================= 2024年08月20日 =======================
+
     for i in range(10):
         time.sleep(1)
-        # clear_bandwidth_limit(interface)
         band = traffic_bps_dl[i]
-        if band < 2048:
-            band = 2048
-        limit_bandwidth(interface, band, direction = 'outcoming')
-        print("------------time slot: {}, band {} Kbps -------------".format(timestamp[i], band))
-
-    clear_bandwidth_limit(interface)
-    # for i in range(len(timestamp)):
-    #     # time.sleep(1)
-    #     traffic_bytes_per_second = int(traffic_bps_dl[i] // 8)
-    #     # for ... 
-    #     send_data(traffic_bytes_per_second)
-    #     if traffic_bytes_per_second == 0:
-    #         print("No data sent")
-    #     print("------------time slot: {} -------------".format(timestamp[i]))
-
+        update_rate(band)   
+        # send_control_data(data_size=1024*1024,packet_size=10,ip = '10.120.66.21')
 

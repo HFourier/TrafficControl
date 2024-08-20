@@ -6,6 +6,7 @@ import threading
 import subprocess
 
 
+rate = 0
 def read_csv(csv_file):
     # 打开CSV文件
     traffic_bps_dl = []
@@ -55,9 +56,6 @@ def send_control_data(data_size=1024*1024,packet_size=4096, ip = '10.120.66.21',
     num_packets = (amount + packet_size - 1) // packet_size  # 计算需要发送的包数
     record_size = amount/1024
 
-    # while True:
-
-    
     try:
         record_t1 = time.time()
         # print('[Debug packet_size]: ', packet_size)
@@ -158,3 +156,30 @@ def clear_bandwidth_limit(interface):
 def send_data_max():
     while (1):
         send_data(1024)
+
+def update_rate(rate_):
+    global rate
+    rate = rate_
+
+def get_global_rate():
+    global rate
+    return rate
+
+def send_data_ac_rate():
+    data_size = 1024*1024 # 发送1M的数据量
+    target_rate = 350 # 控制速率
+    adjust = 1 # 调整器
+    packet_size = 1 # 初始化为发送1个包
+    pac = packet_size
+
+    
+    while True:
+        # 持续发送数据
+        target_rate = get_global_rate()
+        get_rate = send_control_data(data_size=data_size,packet_size=pac,ip = '10.120.66.21')
+        adjust = target_rate / get_rate
+        pac = int(pac * adjust) + 1
+        if pac < 1:
+            pac =1
+        elif pac > 1024*60:
+            pac = 1024*60
