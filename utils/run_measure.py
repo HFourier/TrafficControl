@@ -1,8 +1,8 @@
 from flask import Flask
 import threading
 
-from measure import Measure
-import config
+from sys_measure.utils.measure import Measure
+import sys_measure.utils.config as config
 
 
 app = Flask(__name__)

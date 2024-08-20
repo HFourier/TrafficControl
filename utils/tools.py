@@ -24,7 +24,7 @@ def read_csv(csv_file):
     return timestamp, traffic_bps_dl, traffic_bps_ul   
 
 
-def send_data(amount, packet_size=4096, ip = 'localhost', port = 9999):
+def send_data(amount, packet_size=4096, ip = '10.120.66.21', port = 9999):
     # 创建一个UDP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server_address = (ip, port)
@@ -44,7 +44,7 @@ def send_data(amount, packet_size=4096, ip = 'localhost', port = 9999):
 
 
 
-def start_server(host='localhost', port=9999, output_file='received_traffic.csv'):
+def start_server(host='0.0.0.0', port=9999, output_file='received_traffic.csv'):
     # 创建一个UDP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server_address = (host, port)
@@ -109,13 +109,14 @@ def start_server(host='localhost', port=9999, output_file='received_traffic.csv'
 
 def limit_bandwidth(interface,bandwidth, direction = 'both'):
     if direction == 'both':
-        subprocess.run(['tcset', interface, '--rate', f'{bandwidth}Kbps', '--overwrite'])
+        subprocess.run(['tcset', interface, '--rate', f'{bandwidth}Kbps', '--change'])
     else:
         subprocess.run(['tcset', interface,'--direction',direction, '--rate', f'{bandwidth}Kbps', '--overwrite'])
 
 
 def clear_bandwidth_limit(interface):
-    subprocess.run(['tcdel', interface])
+    # subprocess.run(['tcdel', interface])
+    subprocess.run(['tc', 'qdisc', 'del', 'dev', interface, 'root'])
 
 
 def send_data_max():
