@@ -36,11 +36,47 @@ def send_data(amount, packet_size=4096, ip = '10.120.66.21', port = 9999):
         for _ in range(int(num_packets)):
             message = os.urandom(min(packet_size, amount))
             amount -= packet_size
-            sock.sendto(message, server_address)
+            sock.sendto(message, server_address) # 计算sent to执行的时间
+            # 负反馈机制，比设定值高一点点 
             # print(f'Sent {len(message)} bytes of data')
     finally:
         # 关闭socket
         sock.close()
+
+
+def send_control_data(data_size=1024*1024,packet_size=4096, ip = '10.120.66.21', port = 9999):
+    # 创建一个UDP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_address = (ip, port)
+
+    amount = data_size
+    
+    # 生成随机字节数据
+    num_packets = (amount + packet_size - 1) // packet_size  # 计算需要发送的包数
+    record_size = amount/1024
+
+    # while True:
+
+    
+    try:
+        record_t1 = time.time()
+        # print('[Debug packet_size]: ', packet_size)
+        # print('[Debug num_packets]: ', num_packets)
+        for _ in range(int(num_packets)):
+            message = os.urandom(min(packet_size, amount))
+            amount -= packet_size
+            sock.sendto(message, server_address) # 计算sent to执行的时间
+            # 负反馈机制，比设定值高一点点 
+            # print(f'Sent {len(message)} bytes of data')
+        record_t2 = time.time()
+        get_rate = record_size/(record_t2-record_t1)
+        print('[Debug get rate]: ', get_rate," kbps")
+    finally:
+        # 关闭socket
+        sock.close()
+    
+    return get_rate
+
 
 
 
@@ -111,7 +147,7 @@ def limit_bandwidth(interface,bandwidth, direction = 'both'):
     if direction == 'both':
         subprocess.run(['tcset', interface, '--rate', f'{bandwidth}Kbps', '--change'])
     else:
-        subprocess.run(['tcset', interface,'--direction',direction, '--rate', f'{bandwidth}Kbps', '--overwrite'])
+        subprocess.run(['tcset', interface,'--direction', direction, '--rate', f'{bandwidth}Kbps', '--overwrite'])
 
 
 def clear_bandwidth_limit(interface):
