@@ -64,6 +64,7 @@ def send_control_data(data_size=1024*1024,packet_size=4096, ip = '10.120.66.21',
             message = os.urandom(min(packet_size, amount))
             amount -= packet_size
             sock.sendto(message, server_address) # 计算sent to执行的时间
+            # time.sleep(0.00000001)
             # 负反馈机制，比设定值高一点点 
             # print(f'Sent {len(message)} bytes of data')
         record_t2 = time.time()
@@ -149,8 +150,8 @@ def limit_bandwidth(interface,bandwidth, direction = 'both'):
 
 
 def clear_bandwidth_limit(interface):
-    # subprocess.run(['tcdel', interface])
-    subprocess.run(['tc', 'qdisc', 'del', 'dev', interface, 'root'])
+    subprocess.run(['tcdel', interface])
+    # subprocess.run(['tc', 'qdisc', 'del', 'dev', interface, 'root'])
 
 
 def send_data_max():
@@ -172,11 +173,10 @@ def send_data_ac_rate():
     packet_size = 1 # 初始化为发送1个包
     pac = packet_size
 
-    
     while True:
         # 持续发送数据
         target_rate = get_global_rate()
-        get_rate = send_control_data(data_size=data_size,packet_size=pac,ip = '10.120.66.21')
+        get_rate = send_control_data(data_size=data_size, packet_size=pac, ip = '10.120.66.21')
         adjust = target_rate / get_rate
         pac = int(pac * adjust) + 1
         if pac < 1:

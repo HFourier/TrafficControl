@@ -27,15 +27,15 @@ if __name__ == '__main__':
     timestamp, traffic_bps_dl, traffic_bps_ul = read_csv(csv_file)
     interface = "eno1" # 要限制流量的网卡
     
-    # try:
-    #     # 持续发送数据
-    #     # t1 = Thread(target=send_data_max)
-    #     t1 = Thread(target=send_data_ac_rate)
-    #     t1.daemon = True
-    #     t1.start()
+    try:
+        # 持续发送数据
+        # t1 = Thread(target=send_data_max)
+        t1 = Thread(target=send_data_ac_rate)
+        t1.daemon = True
+        t1.start()
 
-    # except:
-    #     print ("Error: unable to start thread to monitor")
+    except:
+        print ("Error: unable to start thread to monitor")
 
     try:
         # 持续监控数据
@@ -55,19 +55,19 @@ if __name__ == '__main__':
     print('Interface: ', interface)
     # clear_bandwidth_limit(interface)
     # ======================= 2024年08月20日 =======================
-    # for i in range(10):
-    #     time.sleep(1)
-    #     band = traffic_bps_dl[i]
-    #     if band < 2048:
-    #         band = 2048
-    #     limit_bandwidth(interface, band, direction = 'outcoming')
-    #     print("------------time slot: {}, band {} Kbps -------------".format(timestamp[i], band))
-    # clear_bandwidth_limit(interface)
-    # ======================= 2024年08月20日 =======================
-
     for i in range(10):
         time.sleep(1)
         band = traffic_bps_dl[i]
-        update_rate(band)   
+        if band < 2048:
+            band = 2048
+        limit_bandwidth(interface, band, direction = 'outgoing')
+        print("------------time slot: {}, band {} Kbps -------------".format(timestamp[i], band))
+    clear_bandwidth_limit(interface)
+    # ======================= 2024年08月20日 =======================
+
+    # for i in range(100):
+    #     time.sleep(1)
+    #     band = traffic_bps_dl[i]
+    #     update_rate(band)   
         # send_control_data(data_size=1024*1024,packet_size=10,ip = '10.120.66.21')
 
