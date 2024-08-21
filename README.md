@@ -11,3 +11,7 @@
 - `python main.py` 开始流量控制与监测，监测结果文件在 `log/` 目录下
 - `python receiver.py` 启动接收端，默认端口 9999
 - `python sender.py` 启动发送端，默认端口 9999
+
+## 测试日志
+
+- 2024-08-21 20:01:01 [Debug] 调试两个控制命令之间，流量控制临时失效的问题：`tcset` 不能用--overwrite 参数，得用 --change 参数

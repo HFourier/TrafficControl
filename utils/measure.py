@@ -51,8 +51,8 @@ class Measure:
         assert self.t_n, self.t_p
 
         # network --->kB
-        net_in = (self.in_new - self.in_old) /(self.t_n-self.t_p) / 1024
-        net_out = (self.out_new - self.out_old) /(self.t_n-self.t_p) / 1024
+        net_in = (self.in_new - self.in_old) /(self.t_n-self.t_p) / 1024 *8 
+        net_out = (self.out_new - self.out_old) /(self.t_n-self.t_p) / 1024 *8
         
         # net_in = str(net_in).split('.')[0] + '.' + str(net_in).split('.')[1][:decimal_place]
         # net_out = str(net_out).split('.')[0] + '.' + str(net_out).split('.')[1][:decimal_place]

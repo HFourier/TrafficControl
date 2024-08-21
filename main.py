@@ -10,7 +10,7 @@ def measure():
     nm = Measure(config.nic_name)
     try:
         while 1:
-            time.sleep(0.1)
+            time.sleep(0.02)
             nm.renew_nic_state()
             nm.record()
             ans = nm.get_state()
@@ -29,8 +29,8 @@ if __name__ == '__main__':
     
     try:
         # 持续发送数据
-        # t1 = Thread(target=send_data_max)
-        t1 = Thread(target=send_data_ac_rate)
+        t1 = Thread(target=send_data_max)
+        # t1 = Thread(target=send_data_ac_rate)
         t1.daemon = True
         t1.start()
 

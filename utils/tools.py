@@ -146,7 +146,7 @@ def limit_bandwidth(interface,bandwidth, direction = 'both'):
     if direction == 'both':
         subprocess.run(['tcset', interface, '--rate', f'{bandwidth}Kbps', '--change'])
     else:
-        subprocess.run(['tcset', interface,'--direction', direction, '--rate', f'{bandwidth}Kbps', '--overwrite'])
+        subprocess.run(['tcset', interface,'--direction', direction, '--rate', f'{bandwidth}Kbps', '--change'])
 
 
 def clear_bandwidth_limit(interface):
@@ -156,7 +156,7 @@ def clear_bandwidth_limit(interface):
 
 def send_data_max():
     while (1):
-        send_data(1024)
+        send_data(10240)
 
 def update_rate(rate_):
     global rate
