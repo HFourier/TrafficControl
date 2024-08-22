@@ -154,9 +154,9 @@ def clear_bandwidth_limit(interface):
     # subprocess.run(['tc', 'qdisc', 'del', 'dev', interface, 'root'])
 
 
-def send_data_max():
+def send_data_max(ip = '10.120.66.21'):
     while (1):
-        send_data(10240)
+        send_data(10240,ip=ip)
 
 def update_rate(rate_):
     global rate
