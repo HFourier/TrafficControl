@@ -8,7 +8,7 @@ from utils.tools import update_stop_thread, get_stop_thread
 
 csv_file = './data/traffic_data.csv'
 timestamp, traffic_bps_dl, traffic_bps_ul = read_csv(csv_file)
-interface = "eno1" # 要限制流量的网卡
+interface = "ens6" # 要限制流量的网卡
 
 def send_control_traffic(ip):
     update_stop_thread(False)
