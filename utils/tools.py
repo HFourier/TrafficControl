@@ -4,9 +4,13 @@ import socket
 import os
 import threading
 import subprocess
+from utils.tools import get_stop_thread
 
 
 rate = 0
+
+stop_threads = False
+
 def read_csv(csv_file):
     # 打开CSV文件
     traffic_bps_dl = []
@@ -25,7 +29,7 @@ def read_csv(csv_file):
     return timestamp, traffic_bps_dl, traffic_bps_ul   
 
 
-def send_data(amount, packet_size=4096, ip = '10.120.66.21', port = 9999):
+def send_data(amount, packet_size=4096, ip = '10.120.66.23', port = 9999):
     # 创建一个UDP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server_address = (ip, port)
@@ -35,6 +39,7 @@ def send_data(amount, packet_size=4096, ip = '10.120.66.21', port = 9999):
     
     try:
         for _ in range(int(num_packets)):
+            # time.sleep(0.001/100000)
             message = os.urandom(min(packet_size, amount))
             amount -= packet_size
             sock.sendto(message, server_address) # 计算sent to执行的时间
@@ -157,6 +162,9 @@ def clear_bandwidth_limit(interface):
 def send_data_max(ip = '10.120.66.21'):
     while (1):
         send_data(10240,ip=ip)
+        stop_threads = get_stop_thread()
+        if stop_threads:
+            break
 
 def update_rate(rate_):
     global rate
@@ -165,6 +173,15 @@ def update_rate(rate_):
 def get_global_rate():
     global rate
     return rate
+
+def update_stop_thread(stop_threads_):
+    global stop_threads
+    stop_threads = stop_threads_
+
+def get_stop_thread():
+    global stop_threads
+    return stop_threads
+
 
 def send_data_ac_rate():
     data_size = 1024*1024 # 发送1M的数据量
