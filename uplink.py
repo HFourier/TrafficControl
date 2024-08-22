@@ -5,8 +5,6 @@ from utils import config
 from utils.measure import Measure
 import xmlrpc.client
 
-
-
 def measure():
     nm = Measure(config.nic_name)
     try:
@@ -19,30 +17,40 @@ def measure():
     except KeyboardInterrupt:
         nm.write_data()
         print('end!')
+    
+def get_downlink_traffic():
+    proxy = xmlrpc.client.ServerProxy("http://10.120.66.21:8000/") # 服务端ip
+    proxy.send_control_traffic("10.120.66.23") # 本机ip 
+    print("[INFO] Begin sending")
 
 if __name__ == '__main__':
 
     csv_file = './data/traffic_data.csv'
     timestamp, traffic_bps_dl, traffic_bps_ul = read_csv(csv_file)
     interface = "eno1" # 要限制流量的网卡
+    limit_bandwidth(interface, 10240, direction = 'outgoing')
 
-    proxy = xmlrpc.client.ServerProxy("http://10.120.66.21:8000/") # 服务端ip
-    proxy.send_control_traffic("10.120.66.23") # 本机ip 
-    print("[INFO] Begin sending")
+    try:
+        t2 = Thread(target=measure)
+        t2.daemon = True
+        t2.start()
+
+    except:
+        print ("Error: unable to start thread to monitor")
+    
+    try:
+        t3 = Thread(target=get_downlink_traffic)
+        t3.daemon = True
+        t3.start()
+
+    except:
+        print ("Error: unable to start thread to downlink")
     
     try:
         # 持续发送数据
         t1 = Thread(target=send_data_max)
         t1.daemon = True
         t1.start()
-
-    except:
-        print ("Error: unable to start thread to monitor")
-
-    try:
-        t2 = Thread(target=measure)
-        t2.daemon = True
-        t2.start()
 
     except:
         print ("Error: unable to start thread to monitor")
