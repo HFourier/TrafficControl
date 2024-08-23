@@ -22,7 +22,7 @@ def send_control_traffic(ip):
         print ("Error: unable to start thread to monitor")
 
     for i in range(10):
-        time.sleep(1)
+        record_t = time.time()
         band = traffic_bps_dl[i]
         if band < 2048:
             band = 2048
@@ -30,6 +30,9 @@ def send_control_traffic(ip):
         print("------------time slot: {}, band {} Kbps -------------".format(timestamp[i], band))
         if i == 9:
             update_stop_thread(True) # 停止发送数据
+        time_diff = time.time()-record_t
+        print("[Debug] Time: ", time.time()-record_t)
+        time.sleep(1-time_diff)
     clear_bandwidth_limit(interface)
 
 if __name__ == '__main__':
