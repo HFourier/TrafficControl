@@ -7,17 +7,15 @@ from xmlrpc.server import SimpleXMLRPCServer
 from utils.tools import update_stop_thread, get_stop_thread
 
 csv_file = './data/traffic_data.csv'
-timestamp, traffic_bps_dl, traffic_bps_ul = read_csv(csv_file)
 interface = "ens6" # 要限制流量的网卡
 
 def send_control_traffic(ip):
-    update_stop_thread(False)
+    timestamp, traffic_bps_dl, traffic_bps_ul = read_csv(csv_file)
     try:
         # 持续发送数据
         t1 = Thread(target=send_data_max, args=(ip,))
         t1.daemon = True
         t1.start()
-
     except:
         print ("Error: unable to start thread to monitor")
 
@@ -31,11 +29,13 @@ def send_control_traffic(ip):
         if i == 9:
             update_stop_thread(True) # 停止发送数据
         time_diff = time.time()-record_t
-        print("[Debug] Time: ", time.time()-record_t)
         time.sleep(1-time_diff)
+        print("[Debug] Time: ", time.time()-record_t)
     clear_bandwidth_limit(interface)
 
 if __name__ == '__main__':
+    update_stop_thread(False)
+    clear_bandwidth_limit(interface)
     server = SimpleXMLRPCServer(("0.0.0.0", 8000))
     print("[INFO]Listening on port 8000...")
     server.register_function(send_control_traffic)

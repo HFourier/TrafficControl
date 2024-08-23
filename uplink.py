@@ -58,6 +58,7 @@ if __name__ == '__main__':
 
     print('Interface: ', interface)
     # ======================= 2024年08月20日 =======================
+    time.sleep(0.43)
     for i in range(10):
         record_t = time.time()
         band = traffic_bps_dl[i]
@@ -66,8 +67,8 @@ if __name__ == '__main__':
         limit_bandwidth(interface, band, direction = 'outgoing')
         print("------------time slot: {}, band {} Kbps -------------".format(timestamp[i], band))
         time_diff = time.time()-record_t
-        print("[Debug] Time: ", time.time()-record_t)
         time.sleep(1-time_diff)
+        print("[Debug] Time: ", time.time()-record_t)
         
     clear_bandwidth_limit(interface)
     # ======================= 2024年08月20日 =======================

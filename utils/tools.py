@@ -155,7 +155,7 @@ def limit_bandwidth(interface,bandwidth, direction = 'both'):
 
 
 def clear_bandwidth_limit(interface):
-    subprocess.run(['tcdel', interface])
+    subprocess.run(['tcdel', interface, '--all'])
     # subprocess.run(['tc', 'qdisc', 'del', 'dev', interface, 'root'])
 
 
