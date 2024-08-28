@@ -1,0 +1,11 @@
+[INFO] Parent PID:  3601304
+Thread 3601344 set to FIFO with priority 50
+[INFO] Process 3601344 is now bound to CPU cores: [6], press: 0.34
+Thread 3601340 set to FIFO with priority 50
+[INFO] Process 3601340 is now bound to CPU cores: [2], press: 0.66
+Thread 3601343 set to FIFO with priority 50
+[INFO] Process 3601343 is now bound to CPU cores: [5], press: 0.34
+Thread 3601342 set to FIFO with priority 50
+[INFO] Process 3601342 is now bound to CPU cores: [4], press: 0.98
+Thread 3601341 set to FIFO with priority 50
+[INFO] Process 3601341 is now bound to CPU cores: [3], press: 0.34

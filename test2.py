@@ -10,7 +10,7 @@ def set_fifo_priority(thread_id):
     # SCHED_FIFO的值为1，表示实时调度策略FIFO
     SCHED_FIFO = 1
     # 设置优先级，取值范围一般为1到99
-    priority = 60
+    priority = 50
 
     # 构造sched_param结构
     param = os.sched_param(priority)
@@ -23,12 +23,12 @@ if __name__ == '__main__':
     ppid = os.getpid()
     p = psutil.Process(ppid)
     p.cpu_affinity([3])
-    set_fifo_priority(ppid)
+    # set_fifo_priority(ppid)
     a = 0
     while True:
         start_time = time.time()
         # Busy loop to simulate load
-        while time.time() - start_time < 0.9 / 100:
+        while time.time() - start_time < 0.98 / 100:
             a+=1
             a-=1
             pass            
