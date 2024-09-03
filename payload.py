@@ -12,7 +12,9 @@ import time
 import psutil
 import os
 import threading
+import random
 import numpy as np
+from PIL import Image
 
 
 TASKS = 5 # 任务数
@@ -33,6 +35,9 @@ def set_fifo_priority(thread_id):
     os.sched_setscheduler(thread_id, SCHED_FIFO, param)
     print(f"[INFO] Thread {thread_id} set to FIFO with priority {priority}")
 
+# ==================== Version 1 =====================
+#                  代码执行重复的加减作为负载
+# ====================================================
 class Payload:
     def __init__(self,taskid,precent,cpu_id) -> None:
         self.taskid = taskid
@@ -68,6 +73,53 @@ class Payload:
             time.sleep(max(0,0.01-self.precent/100))
 
 
+
+# ==================== Version 2 =====================
+#                  添加了图像处理作为负载
+# ====================================================
+class Payload_Image:
+    def __init__(self,taskid,precent,cpu_id) -> None:
+        self.taskid = taskid
+        self.precent = precent
+        self.cpu_id = cpu_id
+        self.a = 0
+        pass
+    def cpu_press(self,shared_precent):   
+        '''
+        CPU 压力程序
+        precent: float, CPU压力百分比
+        cpu_id: list, 要绑定的CPU核心编号组
+        '''
+        _image_path = './data/random_image'+str(self.taskid)+ '.png'
+        _width, _height = 200, 200
+        _image = Image.new('RGB', (_width, _height))
+        
+        if self.cpu_id is None:
+            pass
+        else:
+            # pid = os.getppid()
+            pid = threading.get_native_id()
+            set_fifo_priority(pid) # 设置为FIFO策略
+            p = psutil.Process(pid)
+            p.cpu_affinity(self.cpu_id)
+            print(f"[INFO] Process {pid} is now bound to CPU cores: {self.cpu_id}, press: {self.precent}")
+        while True:
+            self.precent = shared_precent[self.taskid]
+            start_time = time.time()
+            # Busy loop to simulate load
+            while time.time() - start_time < self.precent/100:
+                r = random.randint(0, 255)
+                g = random.randint(0, 255)
+                b = random.randint(0, 255)
+                _image.putpixel((10,15),(r,g,b))
+                _image.save(_image_path) # 启用这一行的时候，precent最小控制在0.2，小于该值CPU占用率都会保持在18%左右，也因CPU而异, 如果需要更小的控制，可以减少图像的大小
+                pass            
+            # Sleep to let the CPU rest
+            time.sleep(max(0,0.01-self.precent/100))
+
+
+
+
 if __name__ == '__main__':
     ppid = os.getpid()
     choseable_level = [0.34,0.66,0.98]
@@ -97,4 +149,6 @@ if __name__ == '__main__':
         # 主函数等待子进程结束
         p.join()
 
-    
+
+
+

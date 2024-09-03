@@ -1,48 +1,30 @@
-from utils.tools import *
-import xmlrpc.client
 import os
 import psutil
 import time
+from PIL import Image
+import numpy as np
+import random
 
 
-
-def set_fifo_priority(thread_id):
-    # SCHED_FIFO的值为1，表示实时调度策略FIFO
-    SCHED_FIFO = 1
-    # 设置优先级，取值范围一般为1到99
-    priority = 60
-
-    # 构造sched_param结构
-    param = os.sched_param(priority)
-    
-    # 使用sched_setscheduler设置线程的调度策略为FIFO
-    os.sched_setscheduler(thread_id, SCHED_FIFO, param)
-    print(f"[INFO] Thread {thread_id} set to FIFO with priority {priority}")
 
 if __name__ == '__main__':
+    image_path = './data/random_image.png'
     ppid = os.getpid()
     p = psutil.Process(ppid)
     p.cpu_affinity([3])
-    set_fifo_priority(ppid)
-    a = 0
+    width, height = 200, 200
+    image = Image.new('RGB', (width, height))
+    precent = 0.10 # (0.01 - 0.99)
+
     while True:
         start_time = time.time()
         # Busy loop to simulate load
-        while time.time() - start_time < 0.9 / 100:
-            a+=1
-            a-=1
-            pass            
+        while time.time() - start_time < precent / 100: # 0.9 为控制的percent
+            r = random.randint(0, 255)
+            g = random.randint(0, 255)
+            b = random.randint(0, 255)
+            image.putpixel((10,15),(r,g,b))
+            image.save(image_path) # 启用这一行的时候，precent最小控制在0.2，小于该值CPU占用率都会保持在18%左右，也因CPU而异
         # Sleep to let the CPU rest
-        time.sleep(max(0,0.01-0.9/100))
+        time.sleep(max(0,0.01-precent/100))
 
-        # time.sleep(0.00001)
-        # print(f"[INFO] Thread {ppid} is running")
-        
-# csv_file = './data/traffic_data.csv'
-    # timestamp, traffic_bps_dl, traffic_bps_ul = read_csv(csv_file)
-    # interface = "eno1" # 要限制流量的网卡
-
-    # proxy = xmlrpc.client.ServerProxy("http://10.120.66.21:8000/") # 服务端ip
-    # proxy.send_control_traffic("10.120.66.23") # 本机ip 
-    # print("[INFO] Begin sending")
-    
