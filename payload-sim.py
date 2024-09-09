@@ -80,7 +80,7 @@ class Payload_Image:
             time.sleep(max(0,0.01-self.precent/100))
 
 
-def dynamic_press(shared_precent): # 动态负载
+def dynamic_press(shared_precent): # 动态负载，目前只为u1-u4 设计
     payload_per = 15
     while (payload_per<35):
         payload_per+=3
@@ -93,6 +93,9 @@ def dynamic_press(shared_precent): # 动态负载
     shared_precent[0:4] = [0.05]*4
 
 def static_press(id,press,wait_time, shared_precent): # 静态负载
+    # id: cpu的核心id
+    # press: 负载百分比
+    # wait_time: 持续时间
     shared_precent[id] = press
     time.sleep(wait_time)
     shared_precent[id] = 0.05
@@ -101,11 +104,13 @@ def static_press(id,press,wait_time, shared_precent): # 静态负载
 if __name__ == '__main__':
     random.seed(1)
     ppid = os.getpid()
-    CPU_Percent = [0.05] * 11
+    CPU_Percent = [0.05] * 11 # 初始化放置5%的负载，所有CPU
 
     print('[INFO] Parent PID: ', ppid)
 
-    shared_precent = multiprocessing.Array("f",CPU_Percent)
+    # 线程共享内存，在每个线程的函数中，每次进行负载都会读取这个变量，观察负载值是否发生变化
+    shared_precent = multiprocessing.Array("f",CPU_Percent) 
+    
     processes = []
     for t in range(TASKS):
         payload = Payload_Image(t,CPU_Percent[t], [t+2]) # CPU 压力百分比:0-1 , 绑定核心 [0-cores]
@@ -113,12 +118,12 @@ if __name__ == '__main__':
         processes.append(process)
 
     for p in processes:
-        p.start()
+        p.start() # 开启线程
 
     
 
-    for i in range(ROUNDS):
-        for j in range(TASKS):
+    for i in range(ROUNDS): # 轮次
+        for j in range(TASKS): # 为每个CPU定制负载情况
             if j == 0: # u1 - u4
                 r = random.randint(0,100)
                 if r < 10: # 10% 的概率
